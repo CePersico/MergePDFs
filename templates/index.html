@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -42,11 +42,13 @@
     <h1>Fusionar Documentos PDF</h1>
     <form id="pdf-form" method="POST" enctype="multipart/form-data">
         <input type="file" id="pdf-input" name="pdf_files" accept=".pdf">
+        <p id="no-file-message" >llllNo se ha seleccionado ningún archivo</p> 
         <ul id="file-list"></ul>
         <button type="submit" id="submit-btn" disabled>Fusionar PDFs</button>
     </form>
 
     <script>
+        const noFileMessage = document.getElementById('no-file-message');
         const pdfInput = document.getElementById('pdf-input');
         const fileList = document.getElementById('file-list');
         const submitBtn = document.getElementById('submit-btn');
@@ -57,6 +59,12 @@
         pdfInput.addEventListener('change', function(event) {
             const files = event.target.files;
 
+            // Oculta el mensaje de "No se ha seleccionado ningún archivo" cuando se seleccionan archivos
+            if (files.length > 0) { 
+                console.log("Ocultando mensaje");
+                noFileMessage.style.display = 'none';
+            }
+
             for (const file of files) {
                 filesArray.push(file);
                 const li = document.createElement('li');
@@ -64,17 +72,24 @@
                 fileList.appendChild(li);
             }
 
-            // Enable the submit button if there are files selected
+            // Habilita el botón de enviar si hay archivos seleccionados
             if (filesArray.length > 0) {
                 submitBtn.disabled = false;
             }
 
-            // Clear the input so the same file can be selected again
+            // Limpia el input para permitir la selección del mismo archivo nuevamente
             pdfInput.value = '';
         });
 
+
         form.addEventListener('submit', function(event) {
             event.preventDefault();
+
+            // Si no hay archivos seleccionados, muestra el mensaje y no procede
+            if (filesArray.length === 0) {
+                noFileMessage.style.display = 'block';
+                return;
+            }
 
             const formData = new FormData();
             for (const file of filesArray) {
@@ -100,6 +115,159 @@
             // Reset the form and file list after submission
             filesArray = [];
             fileList.innerHTML = '';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fusionar PDFs</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .custom-file-upload {
+            display: inline-block;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        #file-name {
+            font-style: italic;
+            color: #888;
+        }
+        #file-list {
+            margin-top: 20px;
+            list-style-type: none;
+            padding: 0;
+        }
+        #file-list li {
+            background-color: #f2f2f2;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #submit-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #submit-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #pdf-input {
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fusionar Documentos PDF</h1>
+    <form id="pdf-form" method="POST" enctype="multipart/form-data">
+        <!-- Botón personalizado para seleccionar archivos -->
+        <label for="pdf-input" class="custom-file-upload">
+            Elegir archivo
+        </label>
+        <!-- Input real, oculto -->
+        <input type="file" id="pdf-input" name="pdf_files" accept=".pdf" multiple>
+        <!-- Span para mostrar el nombre del archivo seleccionado -->
+        <span id="file-name">No se ha seleccionado ningún archivo</span>
+        <!-- Otros elementos -->
+        <p id="no-file-message" style="display: none;">No se ha seleccionado ningún archivo</p>
+        <ul id="file-list"></ul>
+        <button type="submit" id="submit-btn" disabled>Fusionar PDFs</button>
+    </form>
+
+    <script>
+        const pdfInput = document.getElementById('pdf-input');
+        const fileName = document.getElementById('file-name');
+        const noFileMessage = document.getElementById('no-file-message');
+        const fileList = document.getElementById('file-list');
+        const submitBtn = document.getElementById('submit-btn');
+        const form = document.getElementById('pdf-form');
+        
+        let filesArray = [];
+
+        // Evento para mostrar el nombre del archivo seleccionado y actualizar la interfaz
+        pdfInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+
+            if (files.length > 0) {
+                noFileMessage.style.display = 'none'; // Ocultar el mensaje de no archivo
+                submitBtn.disabled = false; // Habilitar el botón de envío
+
+                for (const file of files) {
+                    filesArray.push(file); // Añadir cada archivo al array
+                    const li = document.createElement('li');
+                    li.textContent = file.name;
+                    fileList.appendChild(li);
+                }
+
+                fileName.textContent = `${filesArray.length} archivo(s) seleccionado(s)`;
+            } else {
+                fileName.textContent = 'No se ha seleccionado ningún archivo';
+                noFileMessage.style.display = 'block';
+                submitBtn.disabled = true; // Deshabilitar el botón de envío
+            }
+        });
+
+        // Evento para manejar el envío del formulario
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Si no hay archivos seleccionados, muestra el mensaje y no procede
+            if (filesArray.length === 0) {
+                noFileMessage.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            for (const file of filesArray) {
+                formData.append('pdf_files', file);
+            }
+
+            fetch('/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'merged_document.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            });
+
+            // Resetear el formulario y la lista de archivos después del envío
+            filesArray = [];
+            fileList.innerHTML = '';
+            fileName.textContent = 'No se ha seleccionado ningún archivo';
             submitBtn.disabled = true;
         });
     </script>
