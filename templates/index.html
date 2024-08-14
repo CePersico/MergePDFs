@@ -115,13 +115,14 @@
 
             if (files.length > 0) {
                 noFileMessage.style.display = 'none'; // Ocultar el mensaje de no archivo
-                submitBtn.disabled = false; // Habilitar el botón de envío
 
                 for (const file of files) {
                     filesArray.push(file); // Añadir cada archivo al array
                     const li = document.createElement('li');
                     li.textContent = file.name;
                     fileList.appendChild(li);
+                    if (filesArray.length > 1) submitBtn.disabled = false; // Habilitar el botón de envío
+
                 }
 
                 fileName.textContent = `${filesArray.length} archivo(s) seleccionado(s)`;
