@@ -2,8 +2,13 @@
 from flask import Flask, render_template, request, send_file, redirect, url_for
 from PyPDF2 import PdfMerger
 import os
+from flask_cors import CORS
+
+
+
 
 app = Flask(__name__)
+CORS(app)  # Esto permite solicitudes de cualquier origen
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 
 # Asegúrate de que el directorio de uploads exista #
@@ -39,7 +44,6 @@ def merge_pdfs(pdf_list, output):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 ## version diferentes tipos de archivos
 
